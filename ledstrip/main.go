@@ -3,8 +3,8 @@ package main
 import (
 	"time"
 
-	"github.com/EliasStar/DashboardUtils/pins"
-	"github.com/EliasStar/DashboardUtils/utils"
+	"github.com/EliasStar/DashboardUtils/common/pins"
+	"github.com/EliasStar/DashboardUtils/common/utils"
 	ws2811 "github.com/rpi-ws281x/rpi-ws281x-go"
 )
 

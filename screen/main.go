@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/EliasStar/DashboardUtils/pins"
-	"github.com/EliasStar/DashboardUtils/utils"
+	"github.com/EliasStar/DashboardUtils/common/pins"
+	"github.com/EliasStar/DashboardUtils/common/utils"
 )
 
 func main() {

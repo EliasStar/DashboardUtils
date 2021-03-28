@@ -25,9 +25,7 @@ RUN apt-get update -y && \
     apt-get upgrade -y && \
     apt-get install -y build-essential
 
-CMD [ "bash" ]
+VOLUME [ "/go/src/app/" ]
+WORKDIR /go/src/app/
 
-# VOLUME [ "/go/src/app/" ]
-# WORKDIR /go/src/app/
-
-# CMD [ "/go/src/app/build.sh" ]
+CMD [ "/go/src/app/build.sh" ]
