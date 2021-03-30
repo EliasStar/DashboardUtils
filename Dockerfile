@@ -27,8 +27,6 @@ RUN apt-get update -y && \
     apt-get upgrade -y && \
     apt-get install -y crossbuild-essential-armel
 
-RUN go install -buildmode=shared std
-
 VOLUME [ "/go/src/app/" ]
 WORKDIR /go/src/app/
 

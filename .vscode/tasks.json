@@ -2,14 +2,14 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build Builder Docker Image",
+            "label": "Build Docker Image",
             "type": "shell",
             "command": "docker",
             "args": [
+                "buildx",
                 "build",
-                "--pull",
                 "-t",
-                "dashboardutils:latest",
+                "utils-builder",
                 "${workspaceFolder}"
             ],
             "group": "build",
@@ -21,9 +21,10 @@
             "command": "docker",
             "args": [
                 "run",
+                "--rm",
                 "--mount",
-                "type=bind,src=${workspaceFolder},dst=/app/",
-                "dashboardutils"
+                "type=bind,src=${workspaceFolder},dst=/go/src/app/",
+                "utils-builder"
             ],
             "group": {
                 "kind": "build",
