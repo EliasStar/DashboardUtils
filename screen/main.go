@@ -5,8 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/EliasStar/DashboardUtils/common/pins"
-	"github.com/EliasStar/DashboardUtils/common/utils"
+	"github.com/EliasStar/DashboardUtils/common"
 )
 
 func main() {
@@ -26,19 +25,19 @@ func main() {
 	flag.Parse()
 
 	if reset {
-		for _, p := range pins.All() {
+		for _, p := range allPins() {
 			p.Write(false)
 			p.Mode(false)
 		}
 	}
 
-	for _, p := range pins.All() {
+	for _, p := range allPins() {
 		p.Mode(true)
 	}
 
 	if pinName := flag.Arg(0); pinName != "" {
-		pin, err := pins.From(pinName)
-		utils.FatalIfErr(err)
+		pin, err := pinFrom(pinName)
+		common.FatalIfErr(err)
 
 		switch action {
 		case "press":
@@ -49,7 +48,7 @@ func main() {
 
 		case "toggle":
 			val, err := pin.Read()
-			utils.FatalIfErr(err)
+			common.FatalIfErr(err)
 
 			pin.Write(!val)
 			time.Sleep(time.Duration(msToggle) * time.Millisecond)
