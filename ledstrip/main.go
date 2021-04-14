@@ -22,7 +22,7 @@ func main() {
 		color, err := parseColor(colorStr)
 		common.FatalIfErr(err)
 
-		strip, err := newLedstrip(data, 61, true)
+		strip, err := newLedstrip(data, 62, true)
 		common.FatalIfErr(err)
 
 		common.FatalIfErr(strip.Init())
