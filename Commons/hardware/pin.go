@@ -1,4 +1,4 @@
-package common
+package hardware
 
 import (
 	"os/exec"
