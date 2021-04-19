@@ -1,11 +1,13 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"log"
 	"time"
 
-	"github.com/EliasStar/DashboardUtils/common"
+	hw "github.com/EliasStar/DashboardUtils/Commons/hardware"
+	lg "github.com/EliasStar/DashboardUtils/Commons/log"
 )
 
 func main() {
@@ -37,7 +39,7 @@ func main() {
 
 	if pinName := flag.Arg(0); pinName != "" {
 		pin, err := parsePin(pinName)
-		common.FatalIfErr(err)
+		lg.FatalIfErr(err)
 
 		switch action {
 		case "press":
@@ -48,7 +50,7 @@ func main() {
 
 		case "toggle":
 			val, err := pin.Read()
-			common.FatalIfErr(err)
+			lg.FatalIfErr(err)
 
 			pin.Write(!val)
 			time.Sleep(time.Duration(msToggle) * time.Millisecond)
@@ -60,4 +62,38 @@ func main() {
 	} else {
 		log.Fatal("screen [<flags>] {power|menu|plus|minus|source}")
 	}
+}
+
+func allPins() []hw.Pin {
+	return []hw.Pin{
+		hw.ScreenPowerPin,
+		hw.ScreenMenuPin,
+		hw.ScreenPlusPin,
+		hw.ScreenMinusPin,
+		hw.ScreenSourcePin,
+	}
+}
+
+func parsePin(pin string) (out hw.Pin, err error) {
+	switch pin {
+	case "Power", "power", "POWER":
+		out = hw.ScreenPowerPin
+
+	case "Menu", "menu", "MENU":
+		out = hw.ScreenMenuPin
+
+	case "Plus", "plus", "PLUS":
+		out = hw.ScreenPlusPin
+
+	case "Minus", "minus", "MINUS":
+		out = hw.ScreenMinusPin
+
+	case "Source", "source", "SOURCE":
+		out = hw.ScreenSourcePin
+
+	default:
+		err = errors.New("possible pin names: power, menu, plus, minus, source")
+	}
+
+	return
 }

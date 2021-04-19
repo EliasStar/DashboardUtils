@@ -7,7 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/EliasStar/DashboardUtils/common"
+	hw "github.com/EliasStar/DashboardUtils/Commons/hardware"
+	lg "github.com/EliasStar/DashboardUtils/Commons/log"
 )
 
 func main() {
@@ -20,24 +21,24 @@ func main() {
 
 	if colorStr := flag.Arg(0); colorStr != "" {
 		color, err := parseColor(colorStr)
-		common.FatalIfErr(err)
+		lg.FatalIfErr(err)
 
-		strip, err := newLedstrip(data, 62, true)
-		common.FatalIfErr(err)
+		strip, err := hw.MakeLedstrip(hw.LedstripDataPin, 62, true)
+		lg.FatalIfErr(err)
 
-		common.FatalIfErr(strip.Init())
+		lg.FatalIfErr(strip.Init())
 		defer strip.Fini()
 
 		strings.ReplaceAll(ledIdentifier, " ", "")
 		if ledIdentifier != "" {
 			leds, err := parseLEDs(ledIdentifier)
-			common.PanicIfErr(err)
+			lg.PanicIfErr(err)
 
 			for _, v := range leds {
-				strip.setLEDColor(v, color)
+				strip.SetLEDColor(v, color)
 			}
 		} else {
-			strip.setStripColor(color)
+			strip.SetStripColor(color)
 		}
 
 		strip.Render()
