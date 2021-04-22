@@ -29,7 +29,7 @@ func main() {
 		lg.FatalIfErr(strip.Init())
 		defer strip.Fini()
 
-		strings.ReplaceAll(ledIdentifier, " ", "")
+		ledIdentifier = strings.ReplaceAll(ledIdentifier, " ", "")
 		if ledIdentifier != "" {
 			ledIndicies, err := parseLEDs(ledIdentifier)
 			lg.PanicIfErr(err)
