@@ -31,19 +31,21 @@ type Ledstrip struct {
 	hasBurnerLED bool
 }
 
-func (ws *Ledstrip) SetLEDColor(index uint, color uint32) {
+func (ws *Ledstrip) SetLEDColor(index uint, color uint32) error {
 	if ws.hasBurnerLED {
 		index++
 	}
 
 	ws.Leds(0)[index] = color
+
+	return nil // TODO
 }
 
-func (ws *Ledstrip) SetLEDColorRGB(index uint, red uint8, green uint8, blue uint8) {
-	ws.SetLEDColor(index, uint32(red)<<16|uint32(green)<<8|uint32(blue))
+func (ws *Ledstrip) SetLEDColorRGB(index uint, red uint8, green uint8, blue uint8) error {
+	return ws.SetLEDColor(index, uint32(red)<<16|uint32(green)<<8|uint32(blue))
 }
 
-func (ws *Ledstrip) SetStripColor(color uint32) {
+func (ws *Ledstrip) SetStripColor(color uint32) error {
 	leds := ws.Leds(0)
 
 	var index uint
@@ -54,10 +56,12 @@ func (ws *Ledstrip) SetStripColor(color uint32) {
 	for ; index < ws.ledCount; index++ {
 		leds[index] = color
 	}
+
+	return nil // TODO
 }
 
-func (ws *Ledstrip) SetStripColorRGB(red uint8, green uint8, blue uint8) {
-	ws.SetStripColor(uint32(red)<<16 | uint32(green)<<8 | uint32(blue))
+func (ws *Ledstrip) SetStripColorRGB(red uint8, green uint8, blue uint8) error {
+	return ws.SetStripColor(uint32(red)<<16 | uint32(green)<<8 | uint32(blue))
 }
 
 func (ws *Ledstrip) GetLEDCount() uint {

@@ -7,22 +7,22 @@ import (
 
 type Pin uint
 
-func (p Pin) Mode(out bool) {
+func (p Pin) Mode(out bool) error {
 	val := "in"
 	if out {
 		val = "out"
 	}
 
-	exec.Command("gpio", "-g", "mode", p.String(), val).Run()
+	return exec.Command("gpio", "-g", "mode", p.String(), val).Run()
 }
 
-func (p Pin) Write(value bool) {
+func (p Pin) Write(value bool) error {
 	val := "0"
 	if value {
 		val = "1"
 	}
 
-	exec.Command("gpio", "-g", "write", p.String(), val).Run()
+	return exec.Command("gpio", "-g", "write", p.String(), val).Run()
 }
 
 func (p Pin) Read() (value bool, err error) {
