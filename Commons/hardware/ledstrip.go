@@ -32,7 +32,7 @@ type Ledstrip struct {
 	hasBurnerLED bool
 }
 
-func (ws *Ledstrip) LEDs() []uint32 {
+func (ws *Ledstrip) GetLEDs() []uint32 {
 	if ws.hasBurnerLED {
 		return ws.Leds(0)[1:]
 	}
@@ -40,12 +40,38 @@ func (ws *Ledstrip) LEDs() []uint32 {
 	return ws.Leds(0)
 }
 
-func (ws *Ledstrip) LED(index int) *uint32 {
-	return &ws.LEDs()[index]
+func (ws *Ledstrip) SetLED(index uint, color uint32) {
+	ws.GetLEDs()[index] = color
+}
+
+func (ws *Ledstrip) SetLEDColor(index uint, c color.Color) {
+	r, g, b, _ := c.RGBA()
+	ws.SetLED(index, r<<16|g<<8|b)
+}
+
+func (ws *Ledstrip) SetLEDRGB(index uint, red byte, green byte, blue byte) {
+	ws.SetLEDColor(index, color.RGBA{red, green, blue, 0xff})
+}
+
+func (ws *Ledstrip) SetMultipleLEDs(indicies []uint, color uint32) {
+	leds := ws.GetLEDs()
+
+	for _, v := range indicies {
+		leds[v] = color
+	}
+}
+
+func (ws *Ledstrip) SetMultipleLEDsColor(indicies []uint, c color.Color) {
+	r, g, b, _ := c.RGBA()
+	ws.SetMultipleLEDs(indicies, r<<16|g<<8|b)
+}
+
+func (ws *Ledstrip) SetMultipleLEDsRGB(indicies []uint, red byte, green byte, blue byte) {
+	ws.SetMultipleLEDsColor(indicies, color.RGBA{red, green, blue, 0xff})
 }
 
 func (ws *Ledstrip) SetStrip(color uint32) {
-	leds := ws.LEDs()
+	leds := ws.GetLEDs()
 
 	for i := 0; i < len(leds); i++ {
 		leds[i] = color

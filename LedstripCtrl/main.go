@@ -34,10 +34,7 @@ func main() {
 			ledIndicies, err := parseLEDs(ledIdentifier)
 			lg.PanicIfErr(err)
 
-			leds := strip.LEDs()
-			for _, v := range ledIndicies {
-				leds[v] = color
-			}
+			strip.SetMultipleLEDs(ledIndicies, color)
 		} else {
 			strip.SetStrip(color)
 		}
