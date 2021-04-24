@@ -42,5 +42,18 @@ func (l LedstripCmd) Execute(ctx *context.Context) error {
 		return errors.New("ledstrip not initialized")
 	}
 
+	switch l.Animation {
+	case AnimationRead:
+
+	case AnimationWrite:
+
+	case AnimationSprinkle:
+
+	case AnimationFlushRight:
+
+	case AnimationFlushLeft:
+
+	}
+
 	return nil
 }

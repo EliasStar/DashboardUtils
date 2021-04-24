@@ -11,6 +11,7 @@ import (
 	hw "github.com/EliasStar/DashboardUtils/Commons/hardware"
 	"github.com/EliasStar/DashboardUtils/Commons/util"
 	cl "github.com/EliasStar/DashboardUtils/Commons/util/color"
+	"github.com/EliasStar/DashboardUtils/Commons/util/misc"
 )
 
 func main() {
@@ -25,7 +26,7 @@ func main() {
 		col, err := parseColor(colorStr)
 		util.FatalIfErr(err)
 
-		strip, err := hw.MakeLedstrip(hw.LedstripDataPin, 62, true)
+		strip, err := hw.MakeLedstrip(misc.LedstripDataPin, 62, true)
 		util.FatalIfErr(err)
 
 		util.FatalIfErr(strip.Init())
