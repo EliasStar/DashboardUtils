@@ -3,10 +3,12 @@ package screen
 type ScreenAction string
 
 const (
-	ActionIsPressed ScreenAction = "read"
-	ActionPress     ScreenAction = "press"
-	ActionRelease   ScreenAction = "release"
-	ActionToggle    ScreenAction = "toggle"
+	ActionRead ScreenAction = "read"
+
+	ActionPress   ScreenAction = "press"
+	ActionRelease ScreenAction = "release"
+
+	ActionToggle ScreenAction = "toggle"
 )
 
 func (s ScreenAction) IsValid() bool {
@@ -21,7 +23,7 @@ func (s ScreenAction) IsValid() bool {
 
 func ScreenActions() []ScreenAction {
 	return []ScreenAction{
-		ActionIsPressed,
+		ActionRead,
 		ActionPress,
 		ActionRelease,
 		ActionToggle,

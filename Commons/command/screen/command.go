@@ -1,6 +1,7 @@
 package screen
 
 import (
+	"context"
 	"time"
 )
 
@@ -10,19 +11,24 @@ type ScreenCmd struct {
 	ToggleDelay time.Duration
 }
 
-func (s ScreenCmd) IsValid() bool {
+func (s ScreenCmd) IsValid(ctx context.Context) bool {
 	a := s.Action.IsValid()
 	b := s.Button.IsValid()
-	c := 0 <= s.ToggleDelay.Milliseconds()
-	d := s.ToggleDelay.Milliseconds() <= 5000
+	c := 0 <= s.ToggleDelay
+	d := s.ToggleDelay.Seconds() <= 5
 
 	return a && b && c && d
 }
 
-func (s ScreenCmd) Execute() (interface{}, error) {
+func (s ScreenCmd) Execute(ctx *context.Context) error {
 	switch s.Action {
-	case ActionIsPressed:
-		return s.Button.Pin().Read()
+	case ActionRead:
+		val, err := s.Button.Pin().Read()
+		if err != nil {
+			return err
+		}
+
+		*ctx = context.WithValue(*ctx, "result", val)
 
 	case ActionPress:
 		s.Button.Pin().Write(true)
@@ -34,5 +40,5 @@ func (s ScreenCmd) Execute() (interface{}, error) {
 		s.Button.Pin().Toggle(s.ToggleDelay)
 	}
 
-	return nil, nil
+	return nil
 }

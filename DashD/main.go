@@ -5,12 +5,12 @@ import (
 	"log"
 	"net"
 
-	nt "github.com/EliasStar/DashboardUtils/Commons/net"
 	"github.com/EliasStar/DashboardUtils/Commons/util"
+	"github.com/EliasStar/DashboardUtils/Commons/util/misc"
 )
 
 func main() {
-	listener, err := net.Listen("tcp", "127.0.0.1:"+nt.DashDPort)
+	listener, err := net.Listen("tcp", "127.0.0.1:"+misc.DashDPort)
 	util.FatalIfErr(err)
 
 	defer listener.Close()

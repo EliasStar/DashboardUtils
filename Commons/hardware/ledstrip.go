@@ -33,21 +33,21 @@ type Ledstrip struct {
 	hasBurnerLED bool
 }
 
-func (ws *Ledstrip) GetLEDs() []uint32 {
-	if ws.hasBurnerLED {
-		return ws.Leds(0)[1:]
+func (l *Ledstrip) GetLEDs() []uint32 {
+	if l.hasBurnerLED {
+		return l.Leds(0)[1:]
 	}
 
-	return ws.Leds(0)
+	return l.Leds(0)
 }
 
-func (ws *Ledstrip) SetSingleLEDColor(index uint, c color.Color) {
+func (l *Ledstrip) SetSingleLEDColor(index uint, c color.Color) {
 	r, g, b, _ := c.RGBA()
-	ws.GetLEDs()[index] = r<<16 | g<<8 | b
+	l.GetLEDs()[index] = r<<16 | g<<8 | b
 }
 
-func (ws *Ledstrip) SetLEDColor(indicies []uint, c color.Color) {
-	leds := ws.GetLEDs()
+func (l *Ledstrip) SetLEDColor(indicies []uint, c color.Color) {
+	leds := l.GetLEDs()
 	r, g, b, _ := c.RGBA()
 
 	for _, v := range indicies {
@@ -55,8 +55,8 @@ func (ws *Ledstrip) SetLEDColor(indicies []uint, c color.Color) {
 	}
 }
 
-func (ws *Ledstrip) SetLEDColors(indicies []uint, c []color.Color) {
-	leds := ws.GetLEDs()
+func (l *Ledstrip) SetLEDColors(indicies []uint, c []color.Color) {
+	leds := l.GetLEDs()
 
 	for i := 0; i < util.Min(len(indicies), len(c)); i++ {
 		r, g, b, _ := c[i].RGBA()
@@ -64,11 +64,15 @@ func (ws *Ledstrip) SetLEDColors(indicies []uint, c []color.Color) {
 	}
 }
 
-func (ws *Ledstrip) SetStripColor(c color.Color) {
-	leds := ws.GetLEDs()
+func (l *Ledstrip) SetStripColor(c color.Color) {
+	leds := l.GetLEDs()
 	r, g, b, _ := c.RGBA()
 
 	for i := 0; i < len(leds); i++ {
 		leds[i] = r<<16 | g<<8 | b
 	}
+}
+
+func (l *Ledstrip) Length() uint {
+	return uint(len(l.GetLEDs()))
 }

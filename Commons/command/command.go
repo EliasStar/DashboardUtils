@@ -1,6 +1,8 @@
 package command
 
+import "context"
+
 type Command interface {
-	IsValid() bool
-	Execute() (interface{}, error)
+	IsValid(ctx context.Context) bool
+	Execute(ctx *context.Context) error
 }
