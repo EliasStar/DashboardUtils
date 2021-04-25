@@ -6,6 +6,7 @@ import (
 	"image/color"
 	"time"
 
+	"github.com/EliasStar/DashboardUtils/Commons/command"
 	"github.com/EliasStar/DashboardUtils/Commons/hardware"
 )
 
@@ -36,16 +37,32 @@ func (l LedstripCmd) IsValid(ctx context.Context) bool {
 	return a && b && c && d
 }
 
-func (l LedstripCmd) Execute(ctx *context.Context) error {
-	_, ok := (*ctx).Value("strip").(hardware.Ledstrip)
+func (l LedstripCmd) Execute(ctx context.Context) command.Result {
+	strip, ok := ctx.Value("strip").(hardware.Ledstrip)
 	if !ok {
-		return errors.New("ledstrip not initialized")
+		return LedstripRst{nil, errors.New("ledstrip not initialized")}
 	}
 
 	switch l.Animation {
 	case AnimationRead:
+		var colors []color.Color
+
+		if len(l.LEDs) == 0 {
+			colors = strip.GetStripColors()
+		} else {
+			colors = strip.GetLEDColors(l.LEDs)
+		}
+
+		return LedstripRst{colors, nil}
 
 	case AnimationWrite:
+		if len(l.LEDs) == 0 {
+			strip.SetStripColor(l.Colors[0])
+		} else if len(l.Colors) == 1 {
+			strip.SetLEDColor(l.LEDs, l.Colors[0])
+		} else {
+			strip.SetLEDColors(l.LEDs, l.Colors)
+		}
 
 	case AnimationSprinkle:
 

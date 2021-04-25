@@ -1,4 +1,4 @@
-package command
+package launch
 
 type LaunchCmd struct {
 	Executable string

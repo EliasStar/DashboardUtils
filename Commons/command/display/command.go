@@ -1,4 +1,4 @@
-package command
+package display
 
 type DisplayCmd struct {
 	URL string

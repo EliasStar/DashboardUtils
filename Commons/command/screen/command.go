@@ -3,6 +3,8 @@ package screen
 import (
 	"context"
 	"time"
+
+	"github.com/EliasStar/DashboardUtils/Commons/command"
 )
 
 type ScreenCmd struct {
@@ -20,15 +22,11 @@ func (s ScreenCmd) IsValid(ctx context.Context) bool {
 	return a && b && c && d
 }
 
-func (s ScreenCmd) Execute(ctx *context.Context) error {
+func (s ScreenCmd) Execute(ctx context.Context) command.Result {
 	switch s.Action {
 	case ActionRead:
 		val, err := s.Button.Pin().Read()
-		if err != nil {
-			return err
-		}
-
-		*ctx = context.WithValue(*ctx, "result", val)
+		return ScreenRst{val, err}
 
 	case ActionPress:
 		s.Button.Pin().Write(true)
