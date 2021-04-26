@@ -1,4 +1,4 @@
-package command
+package display
 
 import (
 	"bytes"

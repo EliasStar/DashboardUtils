@@ -40,7 +40,10 @@ func (l LedstripCmd) IsValid(ctx context.Context) bool {
 func (l LedstripCmd) Execute(ctx context.Context) command.Result {
 	strip, ok := ctx.Value("strip").(hardware.Ledstrip)
 	if !ok {
-		return LedstripRst{nil, errors.New("ledstrip not initialized")}
+		return LedstripRst{
+			command.ErrorRst{errors.New("ledstrip not initialized")},
+			nil,
+		}
 	}
 
 	switch l.Animation {
@@ -53,7 +56,7 @@ func (l LedstripCmd) Execute(ctx context.Context) command.Result {
 			colors = strip.GetLEDColors(l.LEDs)
 		}
 
-		return LedstripRst{colors, nil}
+		return LedstripRst{command.ErrorRst{}, colors}
 
 	case AnimationWrite:
 		if len(l.LEDs) == 0 {
@@ -65,13 +68,22 @@ func (l LedstripCmd) Execute(ctx context.Context) command.Result {
 		}
 
 	case AnimationSprinkle:
-		return LedstripRst{nil, errors.New("animation not implemented")}
+		return LedstripRst{
+			command.ErrorRst{errors.New("animation not implemented")},
+			nil,
+		}
 
 	case AnimationFlush:
-		return LedstripRst{nil, errors.New("animation not implemented")}
+		return LedstripRst{
+			command.ErrorRst{errors.New("animation not implemented")},
+			nil,
+		}
 
 	case AnimationFlushReverse:
-		return LedstripRst{nil, errors.New("animation not implemented")}
+		return LedstripRst{
+			command.ErrorRst{errors.New("animation not implemented")},
+			nil,
+		}
 	}
 
 	return nil

@@ -1,6 +1,13 @@
 package command
 
 type Result interface {
-	OK() bool
-	Err() error
+	IsOK() bool
+}
+
+type ErrorRst struct {
+	Error error
+}
+
+func (e ErrorRst) IsOK() bool {
+	return e.Error == nil
 }

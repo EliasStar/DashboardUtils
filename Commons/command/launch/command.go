@@ -2,6 +2,7 @@ package launch
 
 import (
 	"context"
+	"os/exec"
 
 	"github.com/EliasStar/DashboardUtils/Commons/command"
 )
@@ -12,11 +13,14 @@ type LaunchCmd struct {
 }
 
 func (l LaunchCmd) IsValid(ctx context.Context) bool {
-
-	return false
+	_, err := exec.LookPath(l.Executable)
+	return err == nil
 }
 
 func (l LaunchCmd) Execute(ctx context.Context) command.Result {
-
-	return nil
+	out, err := exec.Command(l.Executable, l.Arguments...).CombinedOutput()
+	return LaunchRst{
+		command.ErrorRst{err},
+		string(out),
+	}
 }

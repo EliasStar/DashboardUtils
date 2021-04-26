@@ -1,16 +1,12 @@
 package ledstrip
 
-import "image/color"
+import (
+	"image/color"
+
+	"github.com/EliasStar/DashboardUtils/Commons/command"
+)
 
 type LedstripRst struct {
+	command.ErrorRst
 	Colors []color.Color
-	Error  error
-}
-
-func (l LedstripRst) OK() bool {
-	return l.Error == nil
-}
-
-func (l LedstripRst) Err() error {
-	return l.Error
 }

@@ -26,7 +26,7 @@ func (s ScreenCmd) Execute(ctx context.Context) command.Result {
 	switch s.Action {
 	case ActionRead:
 		val, err := s.Button.Pin().Read()
-		return ScreenRst{val, err}
+		return ScreenRst{command.ErrorRst{err}, val}
 
 	case ActionPress:
 		s.Button.Pin().Write(true)

@@ -18,9 +18,9 @@ func (d DisplayCmd) IsValid(ctx context.Context) bool {
 }
 
 func (d DisplayCmd) Execute(ctx context.Context) command.Result {
-	cs, ok := ctx.Value("cmdstore").(command.CmdStore)
+	cs, ok := ctx.Value("cmdstore").(CmdStore)
 	if !ok {
-		return DisplayRst{errors.New("commandstore not initialized")}
+		return command.ErrorRst{errors.New("commandstore not initialized")}
 	}
 
 	cmds := cs.Find("chromium-browser")
@@ -31,7 +31,7 @@ func (d DisplayCmd) Execute(ctx context.Context) command.Result {
 
 	_, err := cs.Start("chromium-browser", d.URL)
 	if err != nil {
-		return DisplayRst{err}
+		return command.ErrorRst{err}
 	}
 
 	return nil

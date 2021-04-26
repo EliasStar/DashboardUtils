@@ -1,8 +1,8 @@
-package screen
+package launch
 
 import "github.com/EliasStar/DashboardUtils/Commons/command"
 
-type ScreenRst struct {
+type LaunchRst struct {
 	command.ErrorRst
-	Value bool
+	Output string
 }
