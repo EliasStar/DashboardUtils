@@ -6,7 +6,7 @@ import (
 	"image/color"
 	"time"
 
-	"github.com/EliasStar/DashboardUtils/Commons/command"
+	. "github.com/EliasStar/DashboardUtils/Commons/command"
 	"github.com/EliasStar/DashboardUtils/Commons/hardware"
 	"github.com/EliasStar/DashboardUtils/Commons/util/misc"
 )
@@ -38,13 +38,10 @@ func (l LedstripCmd) IsValid(ctx context.Context) bool {
 	return a && b && c && d
 }
 
-func (l LedstripCmd) Execute(ctx context.Context) command.Result {
+func (l LedstripCmd) Execute(ctx context.Context) Result {
 	strip, ok := ctx.Value(misc.LedstripContextKey).(*hardware.Ledstrip)
 	if !ok {
-		return LedstripRst{
-			command.ErrorRst{errors.New("ledstrip not initialized")},
-			nil,
-		}
+		return NewErrorRst(errors.New("ledstrip not initialized"))
 	}
 
 	switch l.Animation {
@@ -57,7 +54,7 @@ func (l LedstripCmd) Execute(ctx context.Context) command.Result {
 			colors = strip.GetLEDColors(l.LEDs)
 		}
 
-		return LedstripRst{command.ErrorRst{}, colors}
+		return LedstripRst(colors)
 
 	case AnimationWrite:
 		if len(l.LEDs) == 0 {
@@ -68,25 +65,15 @@ func (l LedstripCmd) Execute(ctx context.Context) command.Result {
 			strip.SetLEDColors(l.LEDs, l.Colors)
 		}
 
-	// TODO
 	case AnimationSprinkle:
-		return LedstripRst{
-			command.ErrorRst{errors.New("animation not implemented")},
-			nil,
-		}
+		return NewErrorRst(errors.New("animation not implemented")) // TODO AnimationSprinkle
 
 	case AnimationFlush:
-		return LedstripRst{
-			command.ErrorRst{errors.New("animation not implemented")},
-			nil,
-		}
+		return NewErrorRst(errors.New("animation not implemented")) // TODO AnimationFlush
 
 	case AnimationFlushReverse:
-		return LedstripRst{
-			command.ErrorRst{errors.New("animation not implemented")},
-			nil,
-		}
+		return NewErrorRst(errors.New("animation not implemented")) // TODO AnimationFlushReverse
 	}
 
-	return nil
+	return NewErrorRst(strip.Render())
 }

@@ -1,8 +1,11 @@
 package screen
 
-import "github.com/EliasStar/DashboardUtils/Commons/command"
+type ScreenRst bool
 
-type ScreenRst struct {
-	command.ErrorRst
-	Value bool
+func (s ScreenRst) IsOK() bool {
+	return true
+}
+
+func (s ScreenRst) Err() error {
+	return nil
 }

@@ -9,7 +9,8 @@ import (
 	"net"
 	"os/exec"
 
-	"github.com/EliasStar/DashboardUtils/Commons/command"
+	. "github.com/EliasStar/DashboardUtils/Commons/command"
+	sn "github.com/EliasStar/DashboardUtils/Commons/command/screen"
 	hw "github.com/EliasStar/DashboardUtils/Commons/hardware"
 	nt "github.com/EliasStar/DashboardUtils/Commons/net"
 	"github.com/EliasStar/DashboardUtils/Commons/util"
@@ -17,10 +18,14 @@ import (
 )
 
 func main() {
-	strip, err := hw.NewLedstrip(misc.LedstripDataPin, misc.LedstripLength, misc.LedstripHasBurnerLED)
-	util.FatalIfErr(err)
+	for _, b := range sn.ScreenButtons() {
+		util.PanicIfErr(b.Pin().Mode(true))
+	}
 
-	util.FatalIfErr(strip.Init())
+	strip, err := hw.NewLedstrip(misc.LedstripDataPin, misc.LedstripLength, misc.LedstripHasBurnerLED)
+	util.PanicIfErr(err)
+
+	util.PanicIfErr(strip.Init())
 	defer strip.Fini()
 
 	cmd := exec.Command(misc.DashDBrowser)
@@ -32,7 +37,7 @@ func main() {
 	nt.InitGOB()
 
 	listener, err := net.Listen("tcp", "127.0.0.1:"+misc.DashDPort)
-	util.FatalIfErr(err)
+	util.PanicIfErr(err)
 
 	defer listener.Close()
 	fmt.Println("Listening on:", listener.Addr())
@@ -55,12 +60,13 @@ func handleConnection(con net.Conn, ctx context.Context) {
 
 	fmt.Println("New Connection:", addr)
 
-	var cmd command.Command
+	var cmd Command
 	for dec.Decode(&cmd) == nil {
 		fmt.Printf("|%v|> Received: %T\n", addr, cmd)
 
-		var rst command.Result
-		rst = command.ErrorRst{errors.New("command invalid")}
+		var rst Result = ErrorRst{
+			Error: errors.New("command invalid"),
+		}
 
 		if cmd.IsValid(ctx) {
 			rst = cmd.Execute(ctx)

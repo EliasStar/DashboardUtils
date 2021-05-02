@@ -14,7 +14,7 @@ import (
 
 func main() {
 	con, err := net.Dial("tcp", os.Args[1]+":"+misc.DashDPort)
-	util.FatalIfErr(err)
+	util.PanicIfErr(err)
 
 	defer con.Close()
 
@@ -25,7 +25,7 @@ func main() {
 
 	for {
 		var cmd command.Command
-		// TODO: Input
+		// TODO DashConnect Input
 		enc.Encode(&cmd)
 
 		var rst command.Result

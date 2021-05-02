@@ -15,24 +15,21 @@ import (
 )
 
 func main() {
-	var ledIdentifier string
-
-	flag.StringVar(&ledIdentifier, "leds", "", "")
-	flag.StringVar(&ledIdentifier, "l", "", "")
+	ledIdentifier := flag.String("leds", "", "define individual leds using print custom pages syntax")
 
 	flag.Parse()
 
 	if colorStr := flag.Arg(0); colorStr != "" {
 		col, err := parseColor(colorStr)
-		util.FatalIfErr(err)
+		util.PanicIfErr(err)
 
 		strip, err := hw.NewLedstrip(misc.LedstripDataPin, misc.LedstripLength, misc.LedstripHasBurnerLED)
-		util.FatalIfErr(err)
+		util.PanicIfErr(err)
 
-		util.FatalIfErr(strip.Init())
+		util.PanicIfErr(strip.Init())
 		defer strip.Fini()
 
-		ledIdentifier = strings.ReplaceAll(ledIdentifier, " ", "")
+		ledIdentifier := strings.ReplaceAll(*ledIdentifier, " ", "")
 		if ledIdentifier != "" {
 			ledIndicies, err := parseLEDs(ledIdentifier)
 			util.PanicIfErr(err)
@@ -61,7 +58,7 @@ func parseColor(colorStr string) (color.Color, error) {
 	}
 
 	col := uint32(c) | 0xff000000
-	return cl.RGBA32{col}, nil
+	return cl.RGBA32{Color: col}, nil
 }
 
 func parseLEDs(ledIdentifier string) ([]uint, error) {

@@ -11,7 +11,7 @@ import (
 )
 
 type DisplayCmd struct {
-	// TODO: Add url getter and remover
+	// TODO DisplayCmd url getter and remover
 	URL string
 }
 
@@ -32,5 +32,5 @@ func (d DisplayCmd) Execute(ctx context.Context) command.Result {
 	cmd = exec.Command(misc.DashDBrowser, d.URL)
 	cmd.Start()
 
-	return nil
+	return command.OKRst{}
 }

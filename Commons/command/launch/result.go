@@ -1,8 +1,11 @@
 package launch
 
-import "github.com/EliasStar/DashboardUtils/Commons/command"
+type LaunchRst string
 
-type LaunchRst struct {
-	command.ErrorRst
-	Output string
+func (l LaunchRst) IsOK() bool {
+	return true
+}
+
+func (l LaunchRst) Err() error {
+	return nil
 }

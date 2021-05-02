@@ -4,7 +4,7 @@ import (
 	"context"
 	"os/exec"
 
-	"github.com/EliasStar/DashboardUtils/Commons/command"
+	. "github.com/EliasStar/DashboardUtils/Commons/command"
 )
 
 type LaunchCmd struct {
@@ -17,10 +17,11 @@ func (l LaunchCmd) IsValid(ctx context.Context) bool {
 	return err == nil
 }
 
-func (l LaunchCmd) Execute(ctx context.Context) command.Result {
+func (l LaunchCmd) Execute(ctx context.Context) Result {
 	out, err := exec.Command(l.Executable, l.Arguments...).CombinedOutput()
-	return LaunchRst{
-		command.ErrorRst{err},
-		string(out),
+	if err != nil {
+		return NewErrorRst(err)
 	}
+
+	return LaunchRst(string(out))
 }

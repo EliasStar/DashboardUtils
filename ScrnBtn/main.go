@@ -1,87 +1,109 @@
 package main
 
 import (
-	"errors"
+	"context"
+	"encoding/gob"
 	"flag"
+	"fmt"
 	"log"
+	"net"
+	"os"
 	"time"
 
+	"github.com/EliasStar/DashboardUtils/Commons/command"
 	"github.com/EliasStar/DashboardUtils/Commons/command/screen"
+	. "github.com/EliasStar/DashboardUtils/Commons/command/screen"
 	"github.com/EliasStar/DashboardUtils/Commons/util"
+	"github.com/EliasStar/DashboardUtils/Commons/util/misc"
 )
 
 func main() {
-	var action string
-	var msToggle uint
-	var reset bool
-
-	flag.StringVar(&action, "action", "toggle", "`action` to occur: {press|release|toggle}")
-	flag.StringVar(&action, "a", "toggle", "`action` to occur: {press|release|toggle}")
-
-	flag.UintVar(&msToggle, "toggleDelay", 250, "`ms` between pressing and releasing on toggle")
-	flag.UintVar(&msToggle, "t", 250, "`ms` between pressing and releasing on toggle")
-
-	flag.BoolVar(&reset, "reset", false, "reset gpios")
-	flag.BoolVar(&reset, "r", false, "reset gpios")
-
-	flag.Parse()
-
-	if reset {
-		for _, b := range screen.ScreenButtons() {
-			b.Pin().Write(false)
-			b.Pin().Mode(false)
-		}
-	}
-
-	for _, b := range screen.ScreenButtons() {
-		b.Pin().Mode(true)
-	}
-
-	if btnName := flag.Arg(0); btnName != "" {
-		btn, err := parseButton(btnName)
-		util.FatalIfErr(err)
-
-		switch action {
-		case "press":
-			err := btn.Pin().Write(true)
-			util.FatalIfErr(err)
-
-		case "release":
-			err := btn.Pin().Write(false)
-			util.FatalIfErr(err)
-
-		case "toggle":
-			err := btn.Pin().Toggle(time.Duration(msToggle) * time.Millisecond)
-			util.FatalIfErr(err)
-
-		default:
-			log.Fatal("possible actions: press, release, toggle")
+	con, conErr := net.Dial("tcp", "127.0.0.1:"+misc.DashDPort)
+	if conErr != nil {
+		for _, b := range ScreenButtons() {
+			util.PanicIfErr(b.Pin().Mode(true))
 		}
 	} else {
-		log.Fatal("screen [<flags>] {power|menu|plus|minus|source}")
+		defer con.Close()
+	}
+
+	cmd := parseCommand()
+
+	var rst command.Result
+	if conErr == nil {
+		gob.Register(command.ErrorRst{})
+		gob.Register(command.OKRst{})
+		gob.Register(screen.ScreenCmd{})
+		gob.Register(screen.ScreenRst(false))
+
+		util.PanicIfErr(gob.NewEncoder(con).Encode(&cmd))
+		util.PanicIfErr(gob.NewDecoder(con).Decode(&rst))
+	} else {
+		rst = cmd.Execute(context.Background())
+	}
+
+	if !rst.IsOK() {
+		log.Fatal(rst.Err())
+	}
+
+	snRst, ok := rst.(ScreenRst)
+	if ok {
+		fmt.Println(snRst)
 	}
 }
 
-func parseButton(pin string) (out screen.ScreenButton, err error) {
-	switch pin {
-	case "Power", "power", "POWER":
-		out = screen.ButtonPower
+func parseCommand() command.Command {
+	switch os.Args[1] {
+	case "read", "press", "release":
+		return ScreenCmd{
+			Action:      ScreenAction(os.Args[1]),
+			Button:      parseButton(os.Args[2]),
+			ToggleDelay: 0,
+		}
 
-	case "Menu", "menu", "MENU":
-		out = screen.ButtonMenu
+	case "toggle":
+		set := flag.NewFlagSet("toggle", flag.ContinueOnError)
+		delay := set.Uint("delay", 250, "`ms` between pressing and releasing on toggle")
+		util.PanicIfErr(set.Parse(os.Args[2:]))
 
-	case "Plus", "plus", "PLUS":
-		out = screen.ButtonPlus
+		return ScreenCmd{
+			Action:      ActionToggle,
+			Button:      parseButton(set.Arg(0)),
+			ToggleDelay: time.Duration(*delay) * time.Millisecond,
+		}
 
-	case "Minus", "minus", "MINUS":
-		out = screen.ButtonMinus
-
-	case "Source", "source", "SOURCE":
-		out = screen.ButtonSource
+	case "reset":
+		for _, b := range ScreenButtons() {
+			b.Pin().Write(false)
+			b.Pin().Mode(false)
+		}
+		os.Exit(0)
 
 	default:
-		err = errors.New("possible pin names: power, menu, plus, minus, source")
+		log.Panic("screen {read|press|release|toggle|reset} [-delay=<ms>] [{power|menu|plus|minus|source}]")
 	}
 
-	return
+	return nil
+}
+
+func parseButton(pin string) ScreenButton {
+	switch pin {
+	case "power":
+		return ButtonPower
+
+	case "menu":
+		return ButtonMenu
+
+	case "plus":
+		return ButtonPlus
+
+	case "minus":
+		return ButtonMinus
+
+	case "source":
+		return ButtonSource
+	}
+
+	log.Fatal("possible pin names: power, menu, plus, minus, source")
+	return 0
 }
