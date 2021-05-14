@@ -30,8 +30,10 @@ func (d DisplayCmd) Execute(ctx context.Context) Result {
 		return DisplayRst(cmd.Args[1])
 	}
 
-	cmd.Process.Kill()
-	cmd.Process.Release()
+	if cmd.Process != nil {
+		cmd.Process.Kill()
+		cmd.Process.Release()
+	}
 
 	if d.Action == ActionSet {
 		cmd = exec.Command(misc.DashDBrowser, d.URL)

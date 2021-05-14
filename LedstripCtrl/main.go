@@ -30,6 +30,8 @@ func main() {
 	if conErr == nil {
 		defer con.Close()
 
+		gob.Register(cl.RGB{})
+		gob.Register(cl.RGBA32{})
 		gob.Register(command.ErrorRst{})
 		gob.Register(command.OKRst{})
 		gob.Register(LedstripCmd{})
@@ -51,7 +53,7 @@ func main() {
 	}
 
 	if !rst.IsOK() {
-		log.Fatal(rst.Err())
+		log.Panic(rst.Err())
 	}
 
 	ledRst, ok := rst.(LedstripRst)
@@ -61,8 +63,14 @@ func main() {
 }
 
 func parseCommand() (cmd command.Command) {
-	set := flag.NewFlagSet("all", flag.ContinueOnError)
+	if len(os.Args) < 2 {
+		log.Panic("ledstrip {read|write} [-leds=<leds>] [-anim=<animation>] [-anim-len=<duration>] [<color>...]")
+	}
+
+	set := flag.NewFlagSet("ledstrip", flag.ContinueOnError)
 	ledFilter := set.String("leds", "", "filters `leds` using print custom pages syntax")
+	anim := set.String("anim", "write", "custom `animation` controls how colors are written")
+	animLen := set.Duration("anim-len", 5*time.Second, "animation length as duration")
 	util.PanicIfErr(set.Parse(os.Args[2:]))
 
 	leds, err := parseLEDFilter(*ledFilter)
@@ -76,18 +84,10 @@ func parseCommand() (cmd command.Command) {
 		}
 
 	case "write":
-		set := flag.NewFlagSet("write", flag.ContinueOnError)
-		anim := set.String("anim", "write", "custom `animation` controls how colors are written")
-		animLen := set.Duration("anim-len", 5*time.Second, "animation length as duration")
-		util.PanicIfErr(set.Parse(os.Args[2:]))
-
-		animation := parseAnimation(*anim)
-		colors := parseColors(set.Args())
-
 		cmd = LedstripCmd{
-			Animation:       animation,
+			Animation:       parseAnimation(*anim),
 			LEDs:            leds,
-			Colors:          colors,
+			Colors:          parseColors(set.Args()),
 			AnimationLength: *animLen,
 		}
 
@@ -156,7 +156,7 @@ func parseAnimation(anim string) (animation LedstripAnimation) {
 		animation = AnimationWrite
 
 	default:
-		log.Fatal("possible animations: flush, reverseflush, write")
+		log.Panic("possible animations: flush, reverseflush, write")
 	}
 
 	return
@@ -172,7 +172,7 @@ func parseColors(colorStrings []string) (colors []color.Color) {
 
 		col, err := strconv.ParseUint(c, 16, 32)
 		if err != nil {
-			log.Fatal("possible color syntax: 0xRRGGBB, #RRGGBB, RRGGBB")
+			log.Panic("possible color syntax: 0xRRGGBB, #RRGGBB, RRGGBB")
 		}
 
 		color := cl.RGBA32{Color: uint32(col)}

@@ -40,7 +40,7 @@ func main() {
 	}
 
 	if !rst.IsOK() {
-		log.Fatal(rst.Err())
+		log.Panic(rst.Err())
 	}
 
 	snRst, ok := rst.(ScreenRst)
@@ -50,6 +50,10 @@ func main() {
 }
 
 func parseCommand() (cmd command.Command) {
+	if len(os.Args) < 3 {
+		log.Panic("screen {read|press|release|toggle|reset} [-delay=<ms>] [{power|menu|plus|minus|source}]")
+	}
+
 	switch os.Args[1] {
 	case "read", "press", "release":
 		cmd = ScreenCmd{
@@ -100,7 +104,7 @@ func parseButton(pin string) (button ScreenButton) {
 		button = ButtonSource
 
 	default:
-		log.Fatal("possible pin names: power, menu, plus, minus, source")
+		log.Panic("possible pin names: power, menu, plus, minus, source")
 	}
 
 	return

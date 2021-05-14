@@ -12,7 +12,7 @@ const (
 
 const (
 	DashDPort    = "64586"
-	DashDBrowser = "chromium-browser"
+	DashDBrowser = "browser"
 )
 
 type ContextKey uint

@@ -9,9 +9,13 @@ import (
 	"github.com/EliasStar/DashboardUtils/Commons/command/ledstrip"
 	"github.com/EliasStar/DashboardUtils/Commons/command/schedule"
 	"github.com/EliasStar/DashboardUtils/Commons/command/screen"
+	"github.com/EliasStar/DashboardUtils/Commons/util/color"
 )
 
 func InitGOB() {
+	gob.Register(color.RGB{})
+	gob.Register(color.RGBA32{})
+
 	gob.Register(command.ErrorRst{})
 	gob.Register(command.OKRst{})
 
