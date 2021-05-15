@@ -2,8 +2,8 @@ package display
 
 import (
 	"context"
-	"net/url"
 	"os/exec"
+	"syscall"
 
 	"github.com/EliasStar/Dashboard/DashD/command"
 )
@@ -18,9 +18,7 @@ type Command struct {
 }
 
 func (c Command) IsValid(ctx context.Context) bool {
-	valid := c.Action.IsValid()
-	_, err := url.Parse(c.URL)
-	return valid && err == nil
+	return c.Action.IsValid()
 }
 
 func (c Command) Execute(ctx context.Context) command.Result {
@@ -30,12 +28,19 @@ func (c Command) Execute(ctx context.Context) command.Result {
 	}
 
 	if c.Action == ActionGet {
-		return Result(cmd.Args[1])
+		var url string
+		if len(cmd.Args) > 1 {
+			url = cmd.Args[1]
+		}
+
+		return Result(url)
 	}
 
 	if cmd.Process != nil {
-		cmd.Process.Kill()
-		cmd.Process.Release()
+		cmd.Process.Signal(syscall.SIGTERM)
+		cmd.Wait()
+
+		*cmd = exec.Cmd{}
 	}
 
 	if c.Action == ActionSet {

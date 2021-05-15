@@ -35,6 +35,7 @@ func InitGOBFull() {
 	InitGOBScreen()
 
 	gob.Register(display.Command{})
+	gob.Register(display.Result(""))
 
 	gob.Register(launch.Command{})
 	gob.Register(launch.Result(""))

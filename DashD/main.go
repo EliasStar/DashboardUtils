@@ -26,15 +26,13 @@ func main() {
 	util.PanicIfErr(strip.Init())
 	defer strip.Fini()
 
-	cmd := exec.Command(display.Browser)
-
 	ctx := context.Background()
 	ctx = context.WithValue(ctx, ledstrip.ContextKey{}, strip)
-	ctx = context.WithValue(ctx, display.ContextKey{}, cmd)
+	ctx = context.WithValue(ctx, display.ContextKey{}, &exec.Cmd{})
 
 	util.InitGOBFull()
 
-	listener, err := net.Listen("tcp", "127.0.0.1:"+util.GetPort())
+	listener, err := net.Listen("tcp", ":"+util.GetPort())
 	util.PanicIfErr(err)
 
 	defer listener.Close()
