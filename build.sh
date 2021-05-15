@@ -10,7 +10,7 @@ export GOOS=windows
 export GOARCH=amd64
 
 cd DashConnect/
-go build -o=../build/windows/DashConnect .
+go build -o=../build/windows/DashConnect.exe .
 cd ..
 
 mkdir build/linux/
