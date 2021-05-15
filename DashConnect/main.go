@@ -44,7 +44,8 @@ func main() {
 		util.PanicIfErr(dec.Decode(&rst))
 
 		if !rst.IsOK() {
-			log.Panic(rst)
+			log.Println(rst)
+			continue
 		}
 
 		fmt.Println(rst)
@@ -60,15 +61,30 @@ func parseCommand(input string) (cmd command.Command) {
 
 	switch in[0] {
 	case "display":
+		if len(in) < 3 {
+			log.Println("too few arguments")
+			return
+		}
+
 		cmd = display.Command{
 			Action: display.Action(in[1]),
 			URL:    in[2],
 		}
 
 	case "launch":
+		if len(in) < 2 {
+			log.Println("too few arguments")
+			return
+		}
+
+		var args []string
+		if len(in) > 2 {
+			args = in[2:]
+		}
+
 		cmd = launch.Command{
 			Executable: in[1],
-			Arguments:  in[2:],
+			Arguments:  args,
 		}
 
 	case "ledstrip":
