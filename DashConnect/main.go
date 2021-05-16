@@ -141,7 +141,24 @@ func parseCommand(input string) (cmd command.Command) {
 		}
 
 	case "schedule":
-		cmd = schedule.Command{}
+		if len(in) < 8 {
+			log.Println("too few arguments")
+			return
+		}
+
+		var args []string
+		if len(in) > 8 {
+			args = in[8:]
+		}
+
+		cmd = schedule.Command{
+			Action:         schedule.Action(in[1]),
+			CronExpression: strings.Join(in[2:7], " "),
+			Command: launch.Command{
+				Executable: in[7],
+				Arguments:  args,
+			},
+		}
 
 	case "screen":
 		if len(in) < 4 {
