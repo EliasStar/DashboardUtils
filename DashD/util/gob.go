@@ -41,4 +41,5 @@ func InitGOBFull() {
 	gob.Register(launch.Result(""))
 
 	gob.Register(schedule.Command{})
+	gob.Register(schedule.Result{})
 }
